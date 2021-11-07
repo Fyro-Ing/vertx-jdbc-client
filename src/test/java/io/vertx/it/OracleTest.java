@@ -105,6 +105,19 @@ public class OracleTest {
         }));
   }
 
+  @Test
+  public void updateInstantDateTest(TestContext should) {
+    final Async async = should.async();
+    JDBCClient client = initJDBCClient();
+    client
+      .updateWithParams("UPDATE insert_table SET lname=?, cdate=? WHERE id = 2",
+        new JsonArray().add("aName").add(Instant.now()),
+        should.asyncAssertSuccess(resultSet -> {
+          should.assertEquals(1, resultSet.getUpdated());
+          async.complete();
+        }));
+  }
+
   private JDBCClient initJDBCClient() {
     JsonObject options = new JsonObject()
       .put("url", server.getJdbcUrl())
