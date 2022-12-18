@@ -83,9 +83,24 @@ public class OracleTest {
     JDBCClient client = initJDBCClient();
     client
       .updateWithParams("INSERT INTO insert_table VALUES (?, ?, ?, ?, ?)",
-        new JsonArray().add(3).add("doe").add("john")
+        new JsonArray().add(4).add("doe").add("john")
           .add(LocalDateTime.of(2001, 1, 1, 0, 0))
           .add(LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())),
+        should.asyncAssertSuccess(resultSet -> {
+          Assert.assertEquals(1, resultSet.getUpdated());
+          async.complete();
+        }));
+  }
+
+  @Test
+  public void simpleInsertInstantTest(TestContext should) {
+    final Async async = should.async();
+    JDBCClient client = initJDBCClient();
+    client
+      .updateWithParams("INSERT INTO insert_table VALUES (?, ?, ?, ?, ?)",
+        new JsonArray().add(5).add("doe").add("john")
+          .add(LocalDateTime.of(2001, 1, 1, 0, 0))
+          .add(Instant.now()),
         should.asyncAssertSuccess(resultSet -> {
           Assert.assertEquals(1, resultSet.getUpdated());
           async.complete();
@@ -97,7 +112,7 @@ public class OracleTest {
     final Async async = should.async();
     JDBCClient client = initJDBCClient();
     client
-      .updateWithParams("UPDATE insert_table SET lname=?, cdate=? WHERE id = 2",
+      .updateWithParams("UPDATE insert_table SET lname=?, cdate=? WHERE id = 3",
         new JsonArray().add("aName").add(LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())),
         should.asyncAssertSuccess(resultSet -> {
           should.assertEquals(1, resultSet.getUpdated());
@@ -106,12 +121,12 @@ public class OracleTest {
   }
 
   @Test
-  public void updateInstantDateTest(TestContext should) {
+  public void simpleUpdateInstantTest(TestContext should) {
     final Async async = should.async();
     JDBCClient client = initJDBCClient();
     client
-      .updateWithParams("UPDATE insert_table SET lname=?, cdate=? WHERE id = 2",
-        new JsonArray().add("aName").add(Instant.now()),
+      .updateWithParams("UPDATE insert_table SET lname=?, cdate=? WHERE id = 3",
+        new JsonArray().add("aName").add(LocalDateTime.now()),
         should.asyncAssertSuccess(resultSet -> {
           should.assertEquals(1, resultSet.getUpdated());
           async.complete();
